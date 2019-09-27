@@ -4,6 +4,22 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+vueauthclient/node_modules
+vueauthclient/.DS_Store
+vueauthclient/node_modules/
+vueauthclient/dist/
+vueauthclient/npm-debug.log*
+vueauthclient/yarn-debug.log*
+vueauthclient/yarn-error.log*
+
+# Editor directories and files
+vueauthclient/.idea
+vueauthclient/.vscode
+vueauthclient/*.suo
+vueauthclient/*.ntvs*
+vueauthclient/*.njsproj
+vueauthclient/*.sln
+
 ### STS ###
 .apt_generated
 .classpath
