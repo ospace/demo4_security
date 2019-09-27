@@ -1,0 +1,16 @@
+logging:
+  level:
+    root: INFO
+
+server:
+  port: 9090
+  
+security:
+  client-id: myclient
+  client-secret: 222
+  jwt:
+    signing-key: 222222
+    #key-store: classpath:server1.jks
+    #key-store-password: 111111
+    #key-pair-alias: myserver
+    #key-pair-password: 111111
