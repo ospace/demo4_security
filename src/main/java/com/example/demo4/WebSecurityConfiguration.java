@@ -2,6 +2,7 @@ package com.example.demo4;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,6 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+//https://howtodoinjava.com/spring5/webmvc/spring-mvc-cors-configuration/
 
 @Configuration
 @EnableWebSecurity
@@ -31,8 +38,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
+			.cors()
+			.and()
 			.csrf()
 			.disable()
+			.authorizeRequests()
+				//.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/login").permitAll()
 			;
 	}
 	
@@ -46,4 +58,22 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
+	
+	@Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        configuration.addAllowedOrigin("*");
+        //configuration.addAllowedMethod("*");
+        configuration.addAllowedMethod("POST, GET, OPTIONS, DELETE");
+        //configuration.addAllowedHeader("*");
+        configuration.addAllowedHeader("x-requested-with, authorization");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        
+        return source;
+    }
 }

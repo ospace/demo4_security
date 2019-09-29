@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
@@ -8,7 +10,6 @@ import xauth2 from 'xauth2'
 
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
@@ -16,9 +17,6 @@ new Vue({
   template: '<App/>'
 })
 
-Vue.use(xauth2.vue-authentication, {
-
-})
 // new Vue({
 //   methods: {
 //     login: function() {
