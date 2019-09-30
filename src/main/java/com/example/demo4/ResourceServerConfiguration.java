@@ -27,9 +27,9 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.requestMatchers()
-			.and()
-			.csrf().disable()
+		http//.requestMatchers()
+			//.and()
+			//.csrf().disable()
 			.authorizeRequests()
 				//.requestMatchers(CorsUtils::isPreFlightRequest).permitAll() 
 				.antMatchers(HttpMethod.OPTIONS, "/api/login").permitAll()

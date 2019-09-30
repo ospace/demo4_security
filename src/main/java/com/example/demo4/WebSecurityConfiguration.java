@@ -1,5 +1,8 @@
 package com.example.demo4;
 
+import java.util.Arrays;
+
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 //https://howtodoinjava.com/spring5/webmvc/spring-mvc-cors-configuration/
 
@@ -35,9 +39,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
+		http//.sessionManagement()
+			//.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			//.and()
 			.cors()
 			.and()
 			.csrf()
@@ -61,19 +65,27 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        CorsConfiguration config = new CorsConfiguration();
         
-        configuration.addAllowedOrigin("*");
-        //configuration.addAllowedMethod("*");
-        configuration.addAllowedMethod("POST, GET, OPTIONS, DELETE");
-        //configuration.addAllowedHeader("*");
-        configuration.addAllowedHeader("x-requested-with, authorization");
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        config.addAllowedOrigin("*");
+        //config.addAllowedMethod("*");
+        //config.addAllowedMethod("POST, GET, OPTIONS, DELETE");
+        config.setAllowedMethods(Arrays.asList("POST", "GET", "OPTIONS", "DELETE"));
+        config.addAllowedHeader("*");
+        //config.addAllowedHeader("x-requested-with, authorization");
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
+        //source.registerCorsConfiguration("/api/login", config);
         
         return source;
     }
+	
+//	@Bean
+//    public FilterRegistrationBean<CorsFilter> corsFilter() {
+//		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(corsConfigurationSource()));
+//		return bean;
+//	}
 }
