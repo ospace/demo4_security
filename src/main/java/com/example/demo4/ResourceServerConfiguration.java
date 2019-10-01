@@ -33,7 +33,7 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 			.authorizeRequests()
 				//.requestMatchers(CorsUtils::isPreFlightRequest).permitAll() 
 				.antMatchers(HttpMethod.OPTIONS, "/api/login").permitAll()
-				.antMatchers(ROOT_PATTERN).authenticated()
+				//.antMatchers(ROOT_PATTERN).authenticated()
 				
 			;
 	}

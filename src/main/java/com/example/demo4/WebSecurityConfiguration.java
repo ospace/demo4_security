@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 //https://howtodoinjava.com/spring5/webmvc/spring-mvc-cors-configuration/
 
@@ -67,11 +68,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         
-        config.addAllowedOrigin("*");
+        //config.addAllowedOrigin("*");
+        config.setAllowedOrigins(Arrays.asList("*"));
         //config.addAllowedMethod("*");
         //config.addAllowedMethod("POST, GET, OPTIONS, DELETE");
         config.setAllowedMethods(Arrays.asList("POST", "GET", "OPTIONS", "DELETE"));
-        config.addAllowedHeader("*");
+        //config.addAllowedHeader("*");
+        config.setAllowedHeaders(Arrays.asList("x-requested-with", "authorization"));
         //config.addAllowedHeader("x-requested-with, authorization");
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
@@ -80,6 +83,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", config);
         //source.registerCorsConfiguration("/api/login", config);
         
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
     }
 	
