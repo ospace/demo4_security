@@ -2,7 +2,7 @@ package com.example.demo4;
 
 import java.util.Arrays;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,15 +12,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 //https://howtodoinjava.com/spring5/webmvc/spring-mvc-cors-configuration/
 
@@ -29,12 +25,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
+	@Autowired
+	private UserService userService;
+	
 	@Override
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-			.withUser("admin").password(passwordEncoder().encode("111")).roles("ADMIN")
-			.and()
-			.withUser("user").password(passwordEncoder().encode("222")).roles("USER")
+		auth.userDetailsService(userService)
+//		auth.inMemoryAuthentication()
+//			.withUser("admin").password(passwordEncoder().encode("111")).roles("ADMIN")
+//			.and() 
+//			.withUser("user").password(passwordEncoder().encode("222")).roles("USER")
 		;
 	}
 	

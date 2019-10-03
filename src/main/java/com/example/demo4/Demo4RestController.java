@@ -1,11 +1,13 @@
 package com.example.demo4;
 
-import java.security.Principal;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,7 +29,15 @@ public class Demo4RestController {
 	}
 	
 	@GetMapping("/me")
-	public Principal me(final Principal principal) {
-		return principal;
+	public Authentication me(final Authentication authentication) {
+		Map<String, Object> detail = getExtraInfo(authentication);
+		LOGGER.info("detail[{}]", detail);
+		return authentication;
 	}
+	
+	private static Map<String, Object> getExtraInfo(Authentication auth) {
+		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)auth.getDetails();
+		return (Map<String, Object>) details.getDecodedDetails();
+	}
+	
 }
