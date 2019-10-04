@@ -37,7 +37,7 @@ public class Demo4SecurityApplicationTests {
         String clientId, String username, String password) {
   
         Map<String, String> params = new HashMap<>();
-        params.put("grant_type", "password");
+        params.put("grant_type", "password"); 
         params.put("client_id", clientId);
         params.put("username", username);
         params.put("password", password);
