@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,9 +37,29 @@ public class Demo4RestController {
 		return authentication;
 	}
 	
+	public static String getUserId() {
+		return getAuthenticationExtraInfo("user_id", String.class);
+	}
+	
+	public static <R> R getAuthenticationExtraInfo(String key, Class<R> clazz) {
+		Map<String, ?> extraInfo = getAuthenticationExtraInfo();
+		if(null == extraInfo) return null;
+		return clazz.cast(extraInfo.get(key));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, ?> getAuthenticationExtraInfo() {
+		return getExtraInfo(getAuthentication());
+	}
+	
+	@SuppressWarnings("unchecked")
 	private static Map<String, Object> getExtraInfo(Authentication auth) {
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)auth.getDetails();
 		return (Map<String, Object>) details.getDecodedDetails();
 	}
 	
+	public static Authentication getAuthentication() {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+	    return null == securityContext ? null : securityContext.getAuthentication();
+	}
 }

@@ -1,13 +1,21 @@
 package com.example.demo4;
 
+import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
@@ -16,10 +24,14 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfiguration implements ResourceServerConfigurer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceServerConfiguration.class);
 	
 	@Autowired
 	private TokenStore tokenStore;
@@ -42,7 +54,9 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 				//.requestMatchers(CorsUtils::isPreFlightRequest).permitAll() 
 				.antMatchers(HttpMethod.OPTIONS, "/api/login").permitAll()
 				//.antMatchers(ROOT_PATTERN).authenticated()
-				
+			.and()
+			.exceptionHandling()
+				.authenticationEntryPoint(authenticationEntryPoint())
 			;
 	}
 	
@@ -55,9 +69,33 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
         return defaultTokenServices;
     }
 	
+	private AuthenticationEntryPoint authenticationEntryPoint() {
+		return new AuthenticationEntryPoint() {
+			@Override
+			public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException ex) throws IOException, ServletException {
+				
+				ErrorRS errorRS = new ErrorRS();
+				errorRS.setStatus(1);
+				errorRS.setError("unauthorized");
+				errorRS.setMessage(ex.getMessage());
+				errorRS.setPath(req.getServletPath());
+				
+				res.setContentType("application/json");
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				
+				ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.writeValue(res.getOutputStream(), errorRS);
+				
+				LOGGER.error("{}(인증오류): status[{}] path[{}] message[{}]", "unauthorized", 1, req.getServletPath(), ex.getMessage());
+			}
+		};	
+	}
+	
 	private Map<String, Object> getExtraInfo(OAuth2Authentication auth) {
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessToken accessToken = tokenStore.readAccessToken(details.getTokenValue());
 		return accessToken.getAdditionalInformation();
 	}
+	
+	
 }

@@ -1,24 +1,32 @@
 package com.example.demo4;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
@@ -32,6 +40,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @EnableAuthorizationServer
 @EnableConfigurationProperties(KeyPairFactory.class)
 public class AuthorizationServerConfiguration implements AuthorizationServerConfigurer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationServerConfiguration.class);
 	
 	@Value("${security.client-id}")
 	private String clientId;
@@ -70,6 +79,7 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 			.tokenStore(tokenStore())
 			.tokenEnhancer(tokenEnhancerChain)
 			.pathMapping("/oauth/token", "/api/login")
+			.exceptionTranslator(exceptionTranslator())
 			;
 	}
 	
@@ -98,7 +108,6 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 				
 				return token;
 			}
-			
 		};
 	}
 
@@ -126,4 +135,28 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 		ret.setSigningKey(keyPairFactory.getJwt().getSigningKey());
 		return ret;
 	}
+	
+	private WebResponseExceptionTranslator<OAuth2Exception> exceptionTranslator() {
+		return new DefaultWebResponseExceptionTranslator() {
+			@Override
+			public ResponseEntity<OAuth2Exception> translate(Exception e) throws Exception {
+				ResponseEntity<OAuth2Exception> entity = super.translate(e);
+				OAuth2Exception body = entity.getBody();
+				HttpStatus status = entity.getStatusCode();
+
+
+				body.addAdditionalInformation("status", "1");
+				//body.addAdditionalInformation("error", body.getOAuth2ErrorCode());
+				body.addAdditionalInformation("error", "unauthorized");
+				body.addAdditionalInformation("message", body.getMessage());
+				body.addAdditionalInformation("timestamp", new Date().toString());
+				
+				LOGGER.error("{}(인증오류): status[{}] path[{}] message[{}]", "unauthorized", "1", "/api/login", body.getMessage());
+				
+				return new ResponseEntity<>(body, entity.getHeaders(), status);
+			}
+			
+		};
+	}
+
 }
