@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -47,14 +46,9 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http//.requestMatchers()
-			//.and()
-			//.csrf().disable()
-			.authorizeRequests()
-				//.requestMatchers(CorsUtils::isPreFlightRequest).permitAll() 
-				.antMatchers(HttpMethod.OPTIONS, "/api/login").permitAll()
-				//.antMatchers(ROOT_PATTERN).authenticated()
+		http.requestMatchers()
 			.and()
+			.csrf().disable()
 			.exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint())
 			;

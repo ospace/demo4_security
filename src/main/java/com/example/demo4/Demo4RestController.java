@@ -47,7 +47,6 @@ public class Demo4RestController {
 		return clazz.cast(extraInfo.get(key));
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Map<String, ?> getAuthenticationExtraInfo() {
 		return getExtraInfo(getAuthentication());
 	}
