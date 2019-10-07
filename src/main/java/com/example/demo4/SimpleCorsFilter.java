@@ -10,12 +10,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
-@Component
-//@Order(Ordered.HIGHEST_PRECEDENCE)
-@Order(Integer.MIN_VALUE)
+//@Component
+//@Order(Integer.MIN_VALUE)
 public class SimpleCorsFilter implements Filter {
 
     public SimpleCorsFilter() {}
