@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,7 @@ public class Demo4RestController {
 		return ErrorRS.of(888, "SYSTEM", req.getRequestURI(), ex.getMessage());
 	}
 	
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@GetMapping("/me")
 	public Authentication me(final Authentication authentication) {
 		Map<String, Object> detail = getExtraInfo(authentication);

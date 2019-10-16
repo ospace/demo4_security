@@ -1,9 +1,14 @@
 package com.example.demo4;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfiguration.class);
 	
 	@Autowired
 	private UserService userService;
@@ -41,6 +47,33 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.csrf()
 			.disable()
 			;
+	}
+	
+	//https://www.baeldung.com/spring-events
+	@Bean
+	public ApplicationListener<?> authenticationSuccessHandler() {
+		return new ApplicationListener<AbstractAuthenticationEvent> () {
+			@Override
+			public void onApplicationEvent(AbstractAuthenticationEvent ev) {
+				//if (ev.getAuthentication().getPrincipal() instanceof SecurityUser) {
+					//SecurityUser user = (SecurityUser) ev.getAuthentication().getPrincipal();
+					//LOGGER.info("사용자가 로그인하였습니다 ({} / {} / 권한 : {})", user.getUsername(), user.getCustomerName(), user.getAuthority(0).getName());
+					LOGGER.info("사용자가 로그인하였습니다 ({})", ev.getAuthentication());
+				//}
+			}
+		};
+	}
+
+	@Bean
+	public ApplicationListener<?> authenticationFailureHandler() {
+		return new ApplicationListener<AuthenticationFailureBadCredentialsEvent>() {
+			@Override
+			public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent ev) {
+				//SecurityUser user = userDetailsManager.loadUserByUsername(ev.getAuthentication().getName());
+				//LOGGER.info("사용자가 로그인에 실패했습니다 ({} / {} / 권한 : {})", user.getUsername(), user.getCustomerName(), user.getAuthority(0).getName());
+				LOGGER.info("사용자가 로그인에 실패했습니다 ({} / {} / 권한 : {})", ev.getAuthentication());
+			}
+		};
 	}
 	
 	@Bean
