@@ -26,8 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfiguration.class);
 	
-	@Autowired
-	private UserService userService;
+//	@Autowired
+//	private UserService userService;
 	
 	@Autowired
 	private DataSource dataSource;
@@ -39,6 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication().dataSource(dataSource)
 			.usersByUsernameQuery("select username, password, enabled from _users where username=?")
+			.passwordEncoder(passwordEncoder)
 //		auth.userDetailsService(userService)
 //		auth.inMemoryAuthentication()
 //			.withUser("admin").password(passwordEncoder().encode("111")).roles("ADMIN")
