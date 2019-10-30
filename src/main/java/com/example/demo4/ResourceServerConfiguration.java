@@ -1,7 +1,6 @@
 package com.example.demo4;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,32 +14,30 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
+import com.example.demo4.data.ErrorRS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfiguration implements ResourceServerConfigurer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceServerConfiguration.class);
-	
+
 	@Autowired
 	private TokenStore tokenStore;
-	
-	
+
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
 		resources
 			.tokenStore(tokenStore)
 			.tokenServices(tokenServices())
+			.resourceId("api")
 		;
 	}
 
@@ -49,6 +46,12 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 		http.requestMatchers()
 			.and()
 			.csrf().disable()
+			.headers().frameOptions().disable()
+			.and()
+			.authorizeRequests()
+				.antMatchers("/h2/**").permitAll()
+				.anyRequest().authenticated()
+			.and()
 			.exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint())
 			;
@@ -85,11 +88,9 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 		};	
 	}
 	
-	private Map<String, Object> getExtraInfo(OAuth2Authentication auth) {
-		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-		OAuth2AccessToken accessToken = tokenStore.readAccessToken(details.getTokenValue());
-		return accessToken.getAdditionalInformation();
-	}
-	
-	
+//	private Map<String, Object> getExtraInfo(OAuth2Authentication auth) {
+//		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+//		OAuth2AccessToken accessToken = tokenStore.readAccessToken(details.getTokenValue());
+//		return accessToken.getAdditionalInformation();
+//	}
 }

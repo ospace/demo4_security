@@ -1,9 +1,30 @@
 logging:
   level:
     root: INFO
+    org.hibernate.SQL:  DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
   port: 9090
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    #url: jdbc:h2:./data_h2
+    initialization-mode: always
+    platform: h2
+#    schema: schema-h2.sql
+#    continue-on-error: false
+#    data: classpath:schema-h2.sql, classpath:data-h2.sql
+  h2:
+    console:
+      enabled: true
+      path: /h2
+#  jpa:
+#    hibernate:
+#      ddl-auto: create  # create - 모두 제거하고 다시 생성, none - 사용하지 않음
+#  batch:
+#    initialize-schema: always
   
 security:
   client-id: myclient

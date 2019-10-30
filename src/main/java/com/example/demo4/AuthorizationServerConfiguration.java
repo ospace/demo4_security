@@ -35,6 +35,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import com.example.demo4.data.SecurityUser;
+
 
 @Configuration
 @EnableAuthorizationServer
@@ -63,19 +65,22 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 			.inMemory()
 		    .withClient(clientId)
 		    .secret(passwordEncoder.encode(clientSecret))
-		    .authorizedGrantTypes("password")
+		    .authorizedGrantTypes("password", "refresh_token")
 		    .scopes("read", "write")
+		    .resourceIds("api")
+		    .accessTokenValiditySeconds(60)
+		    .refreshTokenValiditySeconds(120)
 		    ;
 	}
 	
 	@Override
 	public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
 		TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter()));
+		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter()));
 		
 		endpoints
 			.authenticationManager(this.authenticatgionManager)
-			.accessTokenConverter(jwtAccessTokenConverter())
+			.accessTokenConverter(accessTokenConverter())
 			.tokenStore(tokenStore())
 			.tokenEnhancer(tokenEnhancerChain)
 			.pathMapping("/oauth/token", "/api/login")
@@ -125,11 +130,11 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 	
 	@Bean
 	public TokenStore tokenStore() {
-		return new JwtTokenStore(jwtAccessTokenConverter());
+		return new JwtTokenStore(accessTokenConverter());
 	}
 	
 	@Bean
-	public JwtAccessTokenConverter jwtAccessTokenConverter() {
+	public JwtAccessTokenConverter accessTokenConverter() {
 		JwtAccessTokenConverter ret = new JwtAccessTokenConverter();
 		//ret.setKeyPair(keyPairFactory.createKeyPair());
 		ret.setSigningKey(keyPairFactory.getJwt().getSigningKey());

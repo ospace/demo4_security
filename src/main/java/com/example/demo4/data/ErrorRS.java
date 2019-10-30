@@ -1,4 +1,4 @@
-package com.example.demo4;
+package com.example.demo4.data;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 

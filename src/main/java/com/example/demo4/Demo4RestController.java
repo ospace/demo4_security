@@ -12,15 +12,16 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo4.data.ErrorRS;
+
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins="*")
+//@CrossOrigin(origins="*")
 @Validated
 public class Demo4RestController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Demo4RestController.class);
@@ -31,6 +32,7 @@ public class Demo4RestController {
 		return ErrorRS.of(888, "SYSTEM", req.getRequestURI(), ex.getMessage());
 	}
 	
+	// 접근권한 설정: ADMIN 또는 USER 사용
 	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@GetMapping("/me")
 	public Authentication me(final Authentication authentication) {
