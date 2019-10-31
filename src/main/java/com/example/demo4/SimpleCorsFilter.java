@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-@Component
-@Order(Integer.MIN_VALUE)
-public class SimpleCorsFilter implements Filter {
+//@Component
+//@Order(Integer.MIN_VALUE)
+public class SimpleCorsFilter {//implements Filter {
 
     public SimpleCorsFilter() {}
 
-    @Override
+//    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
