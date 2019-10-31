@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConv
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -59,18 +62,22 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 	@Autowired
 	private KeyPairFactory keyPairFactory;
 	
+	@Autowired
+	private DataSource dataSource;
+	
 	@Override
 	public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-		clients
-			.inMemory()
-		    .withClient(clientId)
-		    .secret(passwordEncoder.encode(clientSecret))
-		    .authorizedGrantTypes("password", "refresh_token")
-		    .scopes("read", "write")
-		    .resourceIds("api")
-		    .accessTokenValiditySeconds(60)
-		    .refreshTokenValiditySeconds(120)
-		    ;
+		clients.jdbc(dataSource);
+//		clients
+//			.inMemory()
+//		    .withClient(clientId)
+//		    .secret(passwordEncoder.encode(clientSecret))
+//		    .authorizedGrantTypes("password", "refresh_token")
+//		    .scopes("read", "write")
+//		    .resourceIds("api")
+//		    .accessTokenValiditySeconds(60)
+//		    .refreshTokenValiditySeconds(120)
+//		    ;
 	}
 	
 	@Override
@@ -103,13 +110,13 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 		return new TokenEnhancer() {
 			@Override
 			public OAuth2AccessToken enhance(OAuth2AccessToken token, OAuth2Authentication auth) {
-				final Map<String, Object> additionalInfo = new HashMap<>();
-				SecurityUser user = (SecurityUser)auth.getPrincipal();
-				if(null != user) {
-					additionalInfo.put("user_id", user.getId());
-				}
+				//final Map<String, Object> additionalInfo = new HashMap<>();
+				//SecurityUser user = (SecurityUser)auth.getPrincipal();
+				//if(null != user) {
+				//	additionalInfo.put("user_id", user.getId());
+				//}
 				
-				((DefaultOAuth2AccessToken) token).setAdditionalInformation(additionalInfo);
+				//((DefaultOAuth2AccessToken) token).setAdditionalInformation(additionalInfo);
 				
 				return token;
 			}
@@ -130,7 +137,8 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 	
 	@Bean
 	public TokenStore tokenStore() {
-		return new JwtTokenStore(accessTokenConverter());
+		//return new JwtTokenStore(accessTokenConverter());
+		return new JdbcTokenStore(dataSource);
 	}
 	
 	@Bean

@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 import com.example.demo4.data.SecurityAuthority;
 import com.example.demo4.data.SecurityUser;
 
-@Component
-public class UserService implements UserDetailsService {
+//@Component
+public class UserService { //implements UserDetailsService {
 	private static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@Override
+//	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		LOGGER.debug("loadUserByUsername begin: username[{}]", username);
 		
