@@ -49,7 +49,7 @@ public class ResourceServerConfiguration implements ResourceServerConfigurer {
 			.headers().frameOptions().disable()
 			.and()
 			.authorizeRequests()
-				.antMatchers("/h2/**").permitAll()
+				.antMatchers("/h2/**", "/login.html").permitAll()
 				.anyRequest().authenticated()
 			.and()
 			.exceptionHandling()
