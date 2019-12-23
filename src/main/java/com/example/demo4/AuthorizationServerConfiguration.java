@@ -89,6 +89,7 @@ public class AuthorizationServerConfiguration implements AuthorizationServerConf
 			.authenticationManager(this.authenticatgionManager)
 			.accessTokenConverter(accessTokenConverter())
 			.tokenStore(tokenStore())
+            .reuseRefreshTokens(false)
 			.tokenEnhancer(tokenEnhancerChain)
 			.pathMapping("/oauth/token", "/api/login")
 			.exceptionTranslator(exceptionTranslator())
