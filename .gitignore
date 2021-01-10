@@ -4,6 +4,8 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+package-lock.json
+
 vueauthclient/node_modules
 vueauthclient/.DS_Store
 vueauthclient/node_modules/
